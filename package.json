@@ -1,0 +1,8 @@
+{
+  "name": "st-markus-archiv",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-archive.mjs"
+  }
+}

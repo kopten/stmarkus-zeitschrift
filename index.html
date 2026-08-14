@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Die digitale St.-Markus-Zeitschriftenreihe des St. Antonius Klosters in Kröffelbach." />
+    <meta name="theme-color" content="#103e3a" />
+    <title>St. Markus · Zeitschriftenreihe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/site.css" />
+    <link rel="stylesheet" href="assets/additions.css" />
+    <link rel="stylesheet" href="assets/hero.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#ausgaben">Zu den Ausgaben springen</a>
+    <header class="hero">
+      <div class="hero-photo" aria-hidden="true"><img src="assets/images/st-antonius-kloster.png" alt="" /></div>
+      <nav class="nav" aria-label="Hauptnavigation">
+        <a class="brand" href="#top" aria-label="St. Markus Startseite"><span class="brand-mark">✣</span><span>St. Markus</span></a>
+        <a class="nav-link" href="#ausgaben">Ausgaben</a>
+      </nav>
+      <div class="hero-content" id="top">
+        <p class="eyebrow">St. Antonius Kloster · Kröffelbach</p>
+        <h1>Geistige<br /><em>Worte</em></h1>
+        <p class="hero-copy">Die digitale Zeitschriftenreihe <i>St. Markus</i> – Glauben, Kirche und Gemeinschaft seit 2008. Deutsch, العربية und Englisch.</p>
+        <a class="button button-light" href="#ausgaben">Ausgaben entdecken <span>↓</span></a>
+      </div>
+      <figure class="hero-mosaic"><img src="assets/images/st-markus-mosaik.png" alt="Mosaik des Evangelisten Markus am St. Antonius Kloster" /></figure>
+    </header>
+    <main>
+      <section class="archive" id="ausgaben" aria-labelledby="archive-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">Seit 2008</p><h2 id="archive-title">Alle Ausgaben</h2></div>
+          <p id="result-count" aria-live="polite"></p>
+        </div>
+        <div class="controls" aria-label="Ausgaben filtern">
+          <label class="search"><span class="search-icon" aria-hidden="true">⌕</span><span class="sr-only">Ausgaben durchsuchen</span><input id="search" type="search" placeholder="Ausgaben und Artikel durchsuchen" autocomplete="off" /></label>
+          <div class="filters" id="filters"><button class="filter active" data-filter="all">Alle</button><button class="filter" data-filter="magazine">Zeitschrift</button><button class="filter" data-filter="special">Sonderhefte</button><button class="filter" data-filter="de">Deutsch</button><button class="filter" data-filter="ar">العربية</button><button class="filter" data-filter="en">English</button></div>
+        </div>
+        <div class="issues" id="issues"></div>
+      </section>
+    </main>
+    <footer><div><span class="brand-mark">✣</span> St. Markus</div><p>St. Antonius Kloster · Waldsolms-Kröffelbach</p><a href="#top">Nach oben ↑</a></footer>
+    <dialog id="issue-dialog"><button class="dialog-close" aria-label="Schließen">×</button><div id="dialog-content"></div></dialog>
+    <script src="assets/issues.js"></script><script src="assets/app.js"></script>
+  </body>
+</html>
