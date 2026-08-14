@@ -5,7 +5,7 @@ const $ = (selector) => document.querySelector(selector);
 const normal = (value) => value.toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 function languageClass(language) { return `lang-${language}`; }
-function filename(issue) { return encodeURIComponent(issue.file); }
+function filename(issue) { return `pdf/${encodeURIComponent(issue.file)}`; }
 function matches(issue) {
   const haystack = normal([issue.title, issue.year, labels[issue.language], ...issue.articles.map((article) => article.title)].join(' '));
   const filterMatch = state.filter === 'all' || issue.type === state.filter || issue.language === state.filter;

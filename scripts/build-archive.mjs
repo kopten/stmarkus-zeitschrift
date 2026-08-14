@@ -8,7 +8,8 @@ import { mkdirSync, readdirSync, rmSync, statSync, unlinkSync, writeFileSync } f
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const files = readdirSync(root).filter((name) => name.endsWith('.pdf')).sort();
+const pdfDir = resolve(root, 'pdf');
+const files = readdirSync(pdfDir).filter((name) => name.endsWith('.pdf')).sort();
 
 function run(command, args) {
   try { return execFileSync(command, args, { cwd: root, encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 }); }
@@ -50,7 +51,7 @@ function articleHtml(issue, article, content, images) {
   return `<!doctype html>
 <html lang="${issue.language}" dir="${direction}">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${esc(article.title)} - St. Markus ${issue.year}"><title>${esc(article.title)} · St. Markus</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet"><link rel="stylesheet" href="../assets/site.css"><link rel="stylesheet" href="../assets/additions.css"></head>
-<body class="article-page"><header class="article-header"><a href="../index.html#ausgaben" class="article-back">← Alle Ausgaben</a><a href="../index.html" class="brand"><span class="brand-mark">✣</span><span>St. Markus</span></a></header><main class="article-main"><p class="eyebrow">${issue.type === 'special' ? 'Sonderheft' : 'St. Markus'} · ${issue.year} · ${labels[issue.language] || issue.language}</p><h1>${esc(article.title)}</h1><p class="article-source">Ausgabe ${issue.number || ''} · Seite ${article.page}</p>${gallery}<div class="article-text">${body}</div><aside class="article-download"><p>Die Gestaltung, Bilder und der vollständige Originalsatz bleiben in der PDF-Ausgabe erhalten.</p><a class="button" href="../${encodeURIComponent(issue.file)}#page=${article.page}" target="_blank" rel="noopener">Originalseite als PDF öffnen ↗</a></aside></main><footer><div><span class="brand-mark">✣</span> St. Markus</div><p>St. Antonius Kloster · Waldsolms-Kröffelbach</p><a href="../index.html#ausgaben">Alle Ausgaben</a></footer></body></html>`;
+<body class="article-page"><header class="article-header"><a href="../index.html#ausgaben" class="article-back">← Alle Ausgaben</a><a href="../index.html" class="brand"><span class="brand-mark">✣</span><span>St. Markus</span></a></header><main class="article-main"><p class="eyebrow">${issue.type === 'special' ? 'Sonderheft' : 'St. Markus'} · ${issue.year} · ${labels[issue.language] || issue.language}</p><h1>${esc(article.title)}</h1><p class="article-source">Ausgabe ${issue.number || ''} · Seite ${article.page}</p>${gallery}<div class="article-text">${body}</div><aside class="article-download"><p>Die Gestaltung, Bilder und der vollständige Originalsatz bleiben in der PDF-Ausgabe erhalten.</p><a class="button" href="../pdf/${encodeURIComponent(issue.file)}#page=${article.page}" target="_blank" rel="noopener">Originalseite als PDF öffnen ↗</a></aside></main><footer><div><span class="brand-mark">✣</span> St. Markus</div><p>St. Antonius Kloster · Waldsolms-Kröffelbach</p><a href="../index.html#ausgaben">Alle Ausgaben</a></footer></body></html>`;
 }
 
 function extractImages(issue, startPage, endPage, index) {
@@ -59,7 +60,7 @@ function extractImages(issue, startPage, endPage, index) {
   const prefix = resolve(directory, String(index + 1).padStart(2, '0'));
   const first = Math.min(Math.max(1, startPage), issue.pages);
   const last = Math.min(Math.max(first, endPage), issue.pages);
-  run('pdfimages', ['-f', String(first), '-l', String(last), '-j', issue.file, prefix]);
+  run('pdfimages', ['-f', String(first), '-l', String(last), '-j', `pdf/${issue.file}`, prefix]);
   const created = readdirSync(directory).filter((name) => name.startsWith(`${String(index + 1).padStart(2, '0')}-`));
   const images = created.filter((name) => /\.(jpe?g|png|webp)$/i.test(name)).map((name) => ({ name, size: statSync(resolve(directory, name)).size })).filter((image) => image.size > 12 * 1024).sort((a, b) => b.size - a.size);
   const keep = images.slice(0, 2);
@@ -80,8 +81,8 @@ const issues = files.map((file) => {
   const [, year, number, label, languageCode] = match || [];
   const specialMatch = label?.match(/Anba_Michael_(\d+)_Sonderheft/i);
   const language = (languageCode || (year >= '2021' ? 'de' : 'de')).toLowerCase();
-  const pages = Number((run('pdfinfo', [file]).match(/^Pages:\s+(\d+)/m) || [, 0])[1]);
-  const text = run('pdftotext', ['-f', '1', '-l', '7', '-layout', file, '-']);
+  const pages = Number((run('pdfinfo', [`pdf/${file}`]).match(/^Pages:\s+(\d+)/m) || [, 0])[1]);
+  const text = run('pdftotext', ['-f', '1', '-l', '7', '-layout', `pdf/${file}`, '-']);
   const articles = extractArticles(text);
   const issue = {
     id: file.replace(/[^a-z0-9]+/gi, '-').replace(/-pdf$/i, '').toLowerCase(),
@@ -94,7 +95,7 @@ const issues = files.map((file) => {
     title: titleFor(year, specialMatch ? specialMatch[1] : number, Boolean(specialMatch)),
     articles: []
   };
-  const pagesText = run('pdftotext', ['-raw', file, '-']).split('\f');
+  const pagesText = run('pdftotext', ['-raw', `pdf/${file}`, '-']).split('\f');
   if (articles.length) {
     issue.articles = articles.map((article, index) => {
       const next = articles[index + 1]?.page || pages + 1;
